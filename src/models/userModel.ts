@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema<UserInterface>({
     },
     role: {
         type: String,
-        required: true
+       
     },
     auth_time: {
         type: String,

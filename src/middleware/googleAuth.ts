@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import admin from '../config/firebase.config';
-import { User } from '../models/userModel';
+import User  from '../models/userModel';
 export const googleAuth = async (req: Request, res: Response, next: NextFunction) => { 
     try {
         if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) { 
@@ -20,12 +20,26 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
             //checking if user exit
             const userExit = await User.findOne({ "user_id": decodedToken.user_id });
             if (!userExit) { 
-                return res.status(403).json({
-                    status: 'fail',
-                    message: 'need to register'
-                })
+                const newUser = new User({
+                    name: decodedToken.name,
+                    email: decodedToken.email,
+                    imageUrl: decodedToken.picture,
+                    user_id: decodedToken.user_id,
+                    email_verified: decodedToken.email_verified,
+                    role: "user",
+                    auth_time: decodedToken.auth_time
+                });
+                const savedUser = await newUser.save();
+                res.status(201).json({
+                    message: 'User created successfully',
+                    data: savedUser
+                });
             } else {
-                res.status(200).json({
+                res.status(400).json({
+                    messsage: 'User already exist',
+                    
+
+                });
             }
         }
        next();
