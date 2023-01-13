@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import admin from '../config/firebase.config';
-import User  from '../models/userModel';
+import User from '../models/userModel';
+
+
+
 export const googleAuth = async (req: Request, res: Response, next: NextFunction) => { 
     try {
         if(!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) { 
@@ -33,18 +36,41 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
                 res.status(201).json({
                     message: 'User created successfully',
                     data: savedUser
-                });
+               });
+                console.log(savedUser)
             } else {
-                res.status(400).json({
-                    messsage: 'User already exist',
-                    
-
-                });
+                updateNewUser(decodedToken, req, res);
             }
         }
-       next();
+       
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
+            status: 'fail',
+            message: error
+        })
+    }
+}
+
+
+
+const updateNewUser = async(decodedToken:any, req:Request, res:Response ) => {
+    const filter = { user_id: decodedToken.user_id };
+    
+    const option = {
+        new: true,
+        upsert: true,
+    }
+    
+    try {
+        let updateNewUser = await User.findOneAndUpdate(filter, { auth_time: decodedToken.auth_time }, option);
+        if (updateNewUser) { 
+            return res.status(200).json({
+                message: 'User updated  successfully',
+                data: updateNewUser
+        })
+    }
+    } catch (error) {
+        return res.status(500).json({
             status: 'fail',
             message: error
         })
