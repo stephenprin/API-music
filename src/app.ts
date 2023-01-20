@@ -12,9 +12,12 @@ app.use(express.json());
 
 app.use(cors({origin:true}))
 
-import userRoute from './routes/usersRoute';
+import {albumRouter, userRouter,artistRouter,songRouter} from './routes'
 
-app.use('/api/v1/users', userRoute);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/albums', albumRouter);
+app.use('/api/v1/artists', artistRouter);
+app.use('/api/v1/songs', songRouter);
 
 
 //error handling

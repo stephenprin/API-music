@@ -11,8 +11,11 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({ origin: true }));
-const usersRoute_1 = __importDefault(require("./routes/usersRoute"));
-app.use('/api/v1/users', usersRoute_1.default);
+const routes_1 = require("./routes");
+app.use('/api/v1/users', routes_1.userRouter);
+app.use('/api/v1/albums', routes_1.albumRouter);
+app.use('/api/v1/artists', routes_1.artistRouter);
+app.use('/api/v1/songs', routes_1.songRouter);
 //error handling
 app.all('*', (req, res) => {
     res.status(404).json({
